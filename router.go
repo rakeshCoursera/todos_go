@@ -1,10 +1,35 @@
 package main
 
 import (
-    "net/http"
+		"net/http"
+		"./todo"
 
     "github.com/gorilla/mux"
 )
+
+type Route struct {
+    Name        string
+    Method      string
+    Pattern     string
+    HandlerFunc http.HandlerFunc
+}
+
+type Routes []Route
+
+var routes = Routes{
+	Route{
+		"TodoCreate",
+		"POST",
+		"/todos",
+		todo.TodoCreate,
+	},
+	Route{
+		"TodoList",
+		"GET",
+		"/todos",
+		todo.TodoList,
+	},
+}
 
 func NewRouter() *mux.Router {
     router := mux.NewRouter().StrictSlash(true)
