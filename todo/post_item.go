@@ -78,7 +78,7 @@ func TodoCreate(w http.ResponseWriter, r *http.Request) {
             panic(err)
         }
     } else {
-        fmt.Println("Successfully added a item to in table", configs.Table_Name);
+        fmt.Printf("Successfully added a item in the table: %s \n", configs.Table_Name)
     }
 
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")

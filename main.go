@@ -6,12 +6,13 @@ import (
     "strconv"
 
     "./config"
+    "./router"
 )
 
 func main() {
     configs:= config.LoadConfiguration()
  
-    router := NewRouter()
+    router := router.NewRouter()
 
     log.Fatal(http.ListenAndServe(":" + strconv.Itoa(configs.Port), router))
 }

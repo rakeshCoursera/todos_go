@@ -88,7 +88,7 @@ func TodoUpdate(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 		}
 	} else {
-		fmt.Println("Successfully updated the table", configs.Table_Name)
+		fmt.Printf("Successfully updated a item with Id: %s in the table: %s \n", todoId, configs.Table_Name)
 	}
 	
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

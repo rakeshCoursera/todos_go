@@ -54,7 +54,7 @@ func TodoDelete(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 		}
 	} else {
-		fmt.Println("Successfully deleted a item with Id: ", todoId)
+		fmt.Printf("Successfully deleted a item with Id: %s from the table %s \n", todoId ,configs.Table_Name);
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
