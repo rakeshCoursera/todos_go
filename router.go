@@ -22,13 +22,31 @@ var routes = Routes{
 		"POST",
 		"/todos",
 		todo.TodoCreate,
+    },
+    Route{
+        "TodoShow",
+        "GET",
+        "/todos/{todoId}",
+        todo.TodoShow,
 	},
 	Route{
 		"TodoList",
 		"GET",
 		"/todos",
 		todo.TodoList,
-	},
+    },
+    Route{
+		"TodoUpdate",
+		"POST",
+		"/todos/update/{todoId}",
+		todo.TodoUpdate,
+    },
+    Route{
+		"TodoDelete",
+		"GET",
+		"/todos/delete/{todoId}",
+		todo.TodoDelete,
+    },
 }
 
 func NewRouter() *mux.Router {

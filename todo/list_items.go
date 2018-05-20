@@ -1,37 +1,30 @@
 package todo
 
 import (
-    "fmt"
     "net/http"
     "encoding/json"
 
+		"../config"
     "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
+		"github.com/aws/aws-sdk-go/aws/session"
+		"github.com/aws/aws-sdk-go/aws/credentials"
 		"github.com/aws/aws-sdk-go/service/dynamodb"
 		"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 		"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
-// structs to hold info about an item
-type Todo struct {
-	Id        string    `json:"id"`
-	Name      string    `json:"name"`
-	Completed bool      `json:"completed"`
-	Due       string	`json:"due"`
-}
-
-var Todos []Todo
-
 func TodoList(w http.ResponseWriter, r *http.Request) {
-	// Initialize a session in us-west-2 that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials.
+	// load environment variables
+	configs:= config.LoadConfiguration()
+
 	sess, err := session.NewSession(&aws.Config{
-			Region: aws.String("ap-south-1")},
-	)
+		Region:      aws.String(configs.Region),
+		Credentials: credentials.NewStaticCredentials(configs.Access_Key, configs.Secret_Key, configs.Access_Token),
+	})
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422) // unprocessable entity
+		w.WriteHeader(401) // unauthorised request
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 				panic(err)
 		}
@@ -42,7 +35,7 @@ func TodoList(w http.ResponseWriter, r *http.Request) {
 
 	// Create the Expression to fill the input struct with.
 	// Get back the id, name, completed, and due
-	proj := expression.NamesList(expression.Name("id"), expression.Name("name"), expression.Name("completed"), expression.Name("due"))
+	proj := expression.NamesList(expression.Name("id"), expression.Name("title"), expression.Name("completed"), expression.Name("due"), expression.Name("createdAt"), expression.Name("updatedAt"))
 
 	expr, err := expression.NewBuilder().WithProjection(proj).Build()
 
@@ -59,13 +52,11 @@ func TodoList(w http.ResponseWriter, r *http.Request) {
 		ExpressionAttributeNames: expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		ProjectionExpression: expr.Projection(),
-		TableName: aws.String("todo_app_table"),
+		TableName: aws.String(configs.Table_Name),
 	}
 
 	// Make the DynamoDB Query API call
 	result, err := svc.Scan(params)
-
-	fmt.Println("error: ", err)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -75,9 +66,8 @@ func TodoList(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	
-
-	for _, i := range result.Items {
+	Todos:= []Todo{}
+    for _, i := range result.Items {
 		item := Todo{}
 
 		err = dynamodbattribute.UnmarshalMap(i, &item)
@@ -92,7 +82,6 @@ func TodoList(w http.ResponseWriter, r *http.Request) {
 		Todos = append(Todos, item)
 	}
 
-	fmt.Println("Items: ", Todos)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated) // 200

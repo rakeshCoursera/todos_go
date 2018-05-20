@@ -1,0 +1,8 @@
+{
+  "port": 3000,
+  "region" : "",
+  "access_key": "",
+  "secret_key": "",
+  "access_token": "",
+  "table_name": ""
+}
