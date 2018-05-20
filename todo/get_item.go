@@ -1,7 +1,6 @@
 package todo
 
 import (
-    // "fmt"
     "net/http"
     "encoding/json"
 
