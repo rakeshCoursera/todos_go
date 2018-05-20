@@ -38,13 +38,13 @@ var routes = Routes{
     },
     Route{
 		"TodoUpdate",
-		"POST",
+		"PUT",
 		"/todos/update/{todoId}",
 		todo.TodoUpdate,
     },
     Route{
 		"TodoDelete",
-		"GET",
+		"DELETE",
 		"/todos/delete/{todoId}",
 		todo.TodoDelete,
     },
